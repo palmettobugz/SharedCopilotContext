@@ -1,0 +1,27 @@
+{
+  "platforms": {
+    "darwin": {
+      "name": "macOS",
+      "vscodeUserData": "~/Library/Application Support/Code/User",
+      "copilotConfig": "~/.copilot",
+      "shell": "zsh",
+      "lineEnding": "\n"
+    },
+    "win32": {
+      "name": "Windows",
+      "vscodeUserData": "%APPDATA%/Code/User",
+      "copilotConfig": "~/.copilot",
+      "shell": "powershell",
+      "lineEnding": "\r\n"
+    },
+    "linux": {
+      "name": "Linux",
+      "vscodeUserData": "~/.config/Code/User",
+      "copilotConfig": "~/.copilot",
+      "shell": "bash",
+      "lineEnding": "\n"
+    }
+  },
+  "chatSessionsPath": "workspaceStorage/*/chatSessions/*.json",
+  "chatEditingSessionsPath": "workspaceStorage/*/chatEditingSessions/*/state.json"
+}
