@@ -45,7 +45,7 @@ src/
 
 ## Multi-Agent Architecture
 
-This project uses VS Code's agent orchestration:
+This project uses the workspace-level agents defined in `localdev/.github/agents/`:
 
 - **Orchestrator** - Coordinates all agents
 - **Architect** - Design decisions (subagent)
