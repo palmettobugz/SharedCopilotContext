@@ -1,0 +1,3 @@
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}
+{"jsonrpc":"2.0","method":"notifications/initialized"}
+{"jsonrpc":"2.0","id":2,"method":"resources/read","params":{"uri":"context://sessions//Users/merlin/Library/Application Support/Code/User/workspaceStorage/9f513818fd3f853dac95938ff6391ff1/chatSessions/286a8c16-9375-4811-ba76-65ccf937a18e.json"}}

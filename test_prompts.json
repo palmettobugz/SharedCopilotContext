@@ -1,0 +1,5 @@
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}
+{"jsonrpc":"2.0","method":"notifications/initialized"}
+{"jsonrpc":"2.0","id":2,"method":"prompts/list"}
+{"jsonrpc":"2.0","id":3,"method":"prompts/get","params":{"name":"read_and_continue","arguments":{}}}
+{"jsonrpc":"2.0","id":4,"method":"prompts/get","params":{"name":"summarize_and_save","arguments":{"message_count":"15"}}}
