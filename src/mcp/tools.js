@@ -4,6 +4,10 @@
 
 import { ContextManager } from './manager.js';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
+import { existsSync, readFileSync, writeFileSync, statSync } from 'fs';
+import { glob } from 'glob';
+import { getContextFilePath, getChatSessionsGlobPattern } from '../utils/paths.js';
+import { parseChatSession, formatForExport, generateTitle } from '../utils/parser.js';
 
 const manager = new ContextManager();
 
@@ -51,6 +55,91 @@ export const tools = [
       },
       required: ['content']
     }
+  },
+  {
+    name: 'init_context',
+    description: 'Create a new context.md file with template',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspace: {
+          type: 'string',
+          description: 'Optional workspace root path'
+        },
+        projectName: {
+          type: 'string',
+          description: 'Optional project name for template'
+        },
+        projectDescription: {
+          type: 'string',
+          description: 'Optional project description'
+        }
+      }
+    }
+  },
+  {
+    name: 'export_conversation',
+    description: 'Export a VS Code chat session to context.md',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: {
+          type: 'string',
+          description: 'Chat session file path or index number'
+        },
+        workspace: {
+          type: 'string',
+          description: 'Optional workspace root path'
+        },
+        format: {
+          type: 'string',
+          enum: ['full', 'summary'],
+          default: 'summary',
+          description: 'Export format'
+        }
+      },
+      required: ['sessionId']
+    }
+  },
+  {
+    name: 'search_conversations',
+    description: 'Search VS Code Copilot chat history for keywords',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search query'
+        },
+        limit: {
+          type: 'integer',
+          default: 10,
+          description: 'Maximum results to return'
+        },
+        dateFrom: {
+          type: 'string',
+          description: 'Filter from date (ISO format)'
+        },
+        dateTo: {
+          type: 'string',
+          description: 'Filter to date (ISO format)'
+        }
+      },
+      required: ['query']
+    }
+  },
+  {
+    name: 'get_context_summary',
+    description: 'Get statistics about context.md',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspace: {
+          type: 'string',
+          description: 'Optional workspace root path'
+        }
+      }
+    }
   }
 ];
 
@@ -85,6 +174,70 @@ export async function handleToolCall(name, args) {
           );
         }
         const result = await manager.appendContext(workspace, args.content, args.title);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+      
+      case 'init_context': {
+        const result = await manager.initContext(workspace, args.projectName, args.projectDescription);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+      
+      case 'export_conversation': {
+        if (!args.sessionId) {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            'sessionId parameter is required'
+          );
+        }
+        const result = await manager.exportConversation(args.sessionId, workspace, args.format || 'summary');
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+      
+      case 'search_conversations': {
+        if (!args.query) {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            'query parameter is required'
+          );
+        }
+        const result = await manager.searchConversations(args.query, {
+          limit: args.limit || 10,
+          dateFrom: args.dateFrom,
+          dateTo: args.dateTo
+        });
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+      
+      case 'get_context_summary': {
+        const result = await manager.getSummary(workspace);
         return {
           content: [
             {

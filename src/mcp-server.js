@@ -20,10 +20,13 @@ import {
   ListResourcesRequestSchema,
   ReadResourceRequestSchema,
   ListToolsRequestSchema,
-  CallToolRequestSchema
+  CallToolRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
 import { tools, handleToolCall } from './mcp/tools.js';
 import { resources, handleResourceRead } from './mcp/resources.js';
+import { prompts, handlePromptGet } from './mcp/prompts.js';
 
 const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 
@@ -54,7 +57,8 @@ async function main() {
     {
       capabilities: {
         resources: {},
-        tools: {}
+        tools: {},
+        prompts: {}
       }
     }
   );
@@ -85,6 +89,19 @@ async function main() {
     return await handleToolCall(name, args || {});
   });
   
+  // Register list prompts handler
+  server.setRequestHandler(ListPromptsRequestSchema, async () => {
+    log('debug', 'prompts/list called');
+    return { prompts };
+  });
+  
+  // Register get prompt handler
+  server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    log('debug', `prompts/get called: ${name}`);
+    return await handlePromptGet(name, args || {});
+  });
+  
   // Connect via stdio
   const transport = new StdioServerTransport();
   await server.connect(transport);
@@ -92,6 +109,7 @@ async function main() {
   log('info', 'MCP server started successfully');
   log('info', `Available tools: ${tools.map(t => t.name).join(', ')}`);
   log('info', `Available resources: ${resources.map(r => r.uri).join(', ')}`);
+  log('info', `Available prompts: ${prompts.map(p => p.name).join(', ')}`);
 }
 
 // Error handling

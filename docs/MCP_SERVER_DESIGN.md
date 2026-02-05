@@ -1373,6 +1373,48 @@ The MCP server implementation is complete when:
 
 ## 12. Future Enhancements (Phase 4+)
 
+### Copilot CLI Session Resume
+
+The Copilot CLI provides session resume capability via `copilot --resume=<session-id>`. 
+
+**Storage Location (Discovered 2026-02-05):**
+```
+~/.copilot/
+├── config.json                          # CLI preferences
+├── command-history-state.json           # Recent prompts
+├── logs/                                 # Debug logs
+└── session-state/
+    └── <uuid>/
+        ├── workspace.yaml               # Session metadata
+        ├── checkpoints/index.md         # Conversation checkpoints
+        └── files/                        # Modified files
+```
+
+**workspace.yaml Schema:**
+```yaml
+id: 1d44caae-6d97-4e1b-bc6a-54ba9886b0de
+cwd: /path/to/workspace
+summary: "Optional session summary"
+summary_count: 0
+created_at: 2026-02-05T01:11:09.387Z
+updated_at: 2026-02-05T01:11:09.414Z
+git_root: /path/to/workspace
+repository: owner/repo
+branch: main
+```
+
+**Integration opportunities:**
+- **`context://cli-sessions` resource** - Parse `~/.copilot/session-state/*/workspace.yaml`
+- **`get_resume_command` tool** - Return `copilot --resume=<id>` for workspace match
+- **Cross-machine:** Sessions on remote hosts (e.g., star-force-two via SSH) at same path
+
+Example workflow:
+```bash
+# CLI session ends with: "Resume this session with copilot --resume=0cffe71b-..."
+# MCP tool reads ~/.copilot/session-state/0cffe71b.../workspace.yaml
+# Later: get_resume_command returns the command for that workspace
+```
+
 ### Copilot Memory Bridge
 
 Export/import between local context.md and VS Code's cloud-based Copilot Memory:

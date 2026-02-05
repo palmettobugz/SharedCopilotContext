@@ -26,6 +26,55 @@ The new standalone Copilot CLI (different from `gh copilot` extension):
 - Supports slash commands: `/login`, `/model`, `/lsp`, `/feedback`, `/experimental`
 - Uses Claude Sonnet 4.5 by default (can switch to Claude Sonnet 4, GPT-5)
 - Supports MCP servers for extensibility
+- **Session Resume**: Sessions persist with UUID, resumable via `copilot --resume=<session-id>`
+  - Example: `copilot --resume=0cffe71b-515d-4fed-afe5-827931cd74e0`
+  - Future enhancement: Track session IDs in context.md, provide `get_resume_command` tool
+
+### Copilot CLI Session Storage (Discovered 2026-02-05)
+
+**Location:** `~/.copilot/`
+
+| Path | Purpose |
+|------|---------|
+| `~/.copilot/config.json` | CLI preferences (banner, markdown rendering, terminal setup) |
+| `~/.copilot/command-history-state.json` | Recent prompts (array of last ~10 commands) |
+| `~/.copilot/session-state/<uuid>/` | Individual session directories |
+| `~/.copilot/logs/` | Debug logs |
+| `~/.copilot/pkg/` | Package data |
+
+**Session Directory Structure:**
+```
+~/.copilot/session-state/<session-id>/
+├── workspace.yaml     # Metadata: id, cwd, git_root, repository, branch, timestamps
+├── checkpoints/       # Conversation history
+│   └── index.md       # Checkpoint manifest (table of titled checkpoints)
+└── files/             # Modified files during session (if any)
+```
+
+**workspace.yaml Example:**
+```yaml
+id: 1d44caae-6d97-4e1b-bc6a-54ba9886b0de
+cwd: /Users/merlin/Workspace/localdev/SharedCopilotContext
+summary_count: 0
+created_at: 2026-02-05T01:11:09.387Z
+updated_at: 2026-02-05T01:11:09.414Z
+git_root: /Users/merlin/Workspace/localdev/SharedCopilotContext
+repository: palmettobugz/SharedCopilotContext
+branch: main
+```
+
+**Integration Opportunities:**
+- `get_cli_sessions` resource: Parse `~/.copilot/session-state/*/workspace.yaml` for all sessions
+- `get_resume_command` tool: Return `copilot --resume=<id>` for specific workspace
+- Link CLI sessions to VS Code sessions via workspace path/git repo matching
+
+**Multi-Machine Note:**  
+The AI Lab Constellation (see `ai-lab-constellation/docs/HARDWARE_INVENTORY.md`) has nodes:
+- 🚀 **star-force-one** (sf1): 192.168.4.3 - Production server
+- 🌉 **star-force-two** (sf2): 192.168.4.4 - Desktop/Bridge (Copilot CLI installed here)
+- 🛸 **star-force-three** (sf3): 192.168.4.5 - Agent sandbox
+
+SSH alias `sf2` connects to star-force-two. CLI session data on remote machines would be at `~/.copilot/session-state/` on each host.
 
 ## Phase 1: Shared Text File System ✅
 
