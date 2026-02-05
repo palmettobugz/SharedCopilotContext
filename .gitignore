@@ -21,6 +21,11 @@ npm-debug.log*
 dist/
 build/
 
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
 # Context files (user-generated, don't track by default)
 # Uncomment if you want to track your context.md
 # context.md

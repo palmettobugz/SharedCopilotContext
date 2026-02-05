@@ -8,6 +8,7 @@ import { existsSync } from 'fs';
 import { glob } from 'glob';
 import { getChatSessionsGlobPattern } from '../utils/paths.js';
 import { parseChatSession, summarizeConversation } from '../utils/parser.js';
+import { checkCommsStatus, getMessages, parseCommsUri } from './comms.js';
 
 const manager = new ContextManager();
 
@@ -32,6 +33,18 @@ export const resources = [
     name: 'Individual Chat Session',
     mimeType: 'application/json',
     description: 'Full content of a specific chat session'
+  },
+  {
+    uri: 'context://comms',
+    name: 'COMMS Messages',
+    mimeType: 'application/json',
+    description: 'Recent messages from COMMS'
+  },
+  {
+    uri: 'context://comms/status',
+    name: 'COMMS Status',
+    mimeType: 'application/json',
+    description: 'COMMS system health'
   }
 ];
 
@@ -147,6 +160,65 @@ export async function handleResourceRead(uri) {
         throw new McpError(
           ErrorCode.InternalError,
           `Failed to read session: ${error.message}`
+        );
+      }
+    }
+    
+    // COMMS resources
+    if (uri === 'context://comms/status') {
+      try {
+        const status = await checkCommsStatus();
+        return {
+          contents: [
+            {
+              uri,
+              mimeType: 'application/json',
+              text: JSON.stringify(status, null, 2)
+            }
+          ]
+        };
+      } catch (error) {
+        throw new McpError(
+          ErrorCode.InternalError,
+          `Failed to get COMMS status: ${error.message}`
+        );
+      }
+    }
+    
+    if (uri === 'context://comms' || uri.startsWith('context://comms?')) {
+      try {
+        const parsed = parseCommsUri(uri);
+        const result = await getMessages(parsed.limit, parsed.messageType);
+        
+        if (result.offline) {
+          return {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({
+                  offline: true,
+                  error: result.error,
+                  messages: []
+                }, null, 2)
+              }
+            ]
+          };
+        }
+        
+        return {
+          contents: [
+            {
+              uri,
+              mimeType: 'application/json',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      } catch (error) {
+        throw new McpError(
+          ErrorCode.InternalError,
+          `Failed to get COMMS messages: ${error.message}`
         );
       }
     }

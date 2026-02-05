@@ -184,8 +184,8 @@ describe('MCP Tools', () => {
     }
   });
   
-  it('should export 6 tools', () => {
-    assert.strictEqual(tools.length, 6);
+  it('should export 7 tools', () => {
+    assert.strictEqual(tools.length, 7);
     
     const toolNames = tools.map(t => t.name);
     assert.ok(toolNames.includes('read_context'));
@@ -193,6 +193,7 @@ describe('MCP Tools', () => {
     assert.ok(toolNames.includes('init_context'));
     assert.ok(toolNames.includes('export_conversation'));
     assert.ok(toolNames.includes('search_conversations'));
+    assert.ok(toolNames.includes('comms_broadcast'));
     assert.ok(toolNames.includes('get_context_summary'));
   });
   
@@ -307,12 +308,14 @@ describe('MCP Resources', () => {
     }
   });
   
-  it('should export 3 resources', () => {
-    assert.strictEqual(resources.length, 3);
+  it('should export 5 resources', () => {
+    assert.strictEqual(resources.length, 5);
     
     const uris = resources.map(r => r.uri);
     assert.ok(uris.includes('context://current'));
     assert.ok(uris.includes('context://sessions'));
+    assert.ok(uris.includes('context://comms'));
+    assert.ok(uris.includes('context://comms/status'));
     assert.ok(uris.some(u => u.includes('context://sessions/{id}')));
   });
   

@@ -8,6 +8,7 @@ import { existsSync, readFileSync, writeFileSync, statSync } from 'fs';
 import { glob } from 'glob';
 import { getContextFilePath, getChatSessionsGlobPattern } from '../utils/paths.js';
 import { parseChatSession, formatForExport, generateTitle } from '../utils/parser.js';
+import { sendMessage } from './comms.js';
 
 const manager = new ContextManager();
 
@@ -140,6 +141,30 @@ export const tools = [
         }
       }
     }
+  },
+  {
+    name: 'comms_broadcast',
+    description: 'Broadcast a message to the COMMS system',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'string',
+          description: 'Message content'
+        },
+        message_type: {
+          type: 'string',
+          enum: ['status', 'question', 'info', 'alert'],
+          default: 'info',
+          description: 'Message type'
+        },
+        metadata: {
+          type: 'object',
+          description: 'Optional metadata'
+        }
+      },
+      required: ['content']
+    }
   }
 ];
 
@@ -238,6 +263,28 @@ export async function handleToolCall(name, args) {
       
       case 'get_context_summary': {
         const result = await manager.getSummary(workspace);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+      
+      case 'comms_broadcast': {
+        if (!args.content) {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            'Content parameter is required'
+          );
+        }
+        const result = await sendMessage(
+          args.content,
+          args.message_type || 'info',
+          args.metadata || {}
+        );
         return {
           content: [
             {

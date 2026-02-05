@@ -26,8 +26,8 @@ Read this file for prior conversation context. At the end of your session, appen
 | 2 | Terminal menu with ASCII art | ✅ Complete |
 | 3 | MCP Server (6 tools, 3 resources, 2 prompts) | ✅ Complete |
 | 4 | Polish, testing, Agent Skills | ✅ Complete |
-| 5 | COMMS Integration (MCP ↔ COMMS bridge) | ⏳ Next |
-| 6 | Star Force Deployment (sf1/sf2/sf3) | ⏳ Planned |
+| 5 | COMMS Integration (MCP ↔ COMMS bridge) | ✅ Complete |
+| 6 | Star Force Deployment (sf1/sf2/sf3) | ⏳ Next |
 
 ### Multi-Agent Setup
 - **Agents**: Orchestrator, Architect, Implementer, Tester, Docs
@@ -42973,5 +42973,55 @@ localdev/
 ### Next Steps
 - **Phase 5**: COMMS Integration (MCP ↔ COMMS bridge)
 - **Phase 6**: Star Force Deployment
+
+---
+
+## Session 2026-02-05 - Phase 5: COMMS Integration
+
+### 5.1 Design Complete ✅
+**Delegated to**: Architect
+
+**Deliverables:**
+- 1 new MCP tool: `comms_broadcast`
+- 2 new MCP resources: `context://comms`, `context://comms/status`
+- New module: `src/mcp/comms.js`
+- Offline-first error handling with graceful degradation
+- Environment config: `COMMS_API_URL`, `COMMS_TIMEOUT`
+
+**COMMS API:**
+- Base: `http://star-force-one.local:5052`
+- GET /api/messages - Read messages
+- POST /api/messages - Send messages  
+- GET /api/status - System health
+
+### 5.2 Implementation (In Progress)
+**Delegated to**: Implementer
+
+---
+
+### 5.2 Implementation Complete ✅
+**Delegated to**: Implementer
+
+**Files Created/Modified:**
+- `src/mcp/comms.js` (143 lines) - NEW
+  - `checkCommsStatus()` - Health check
+  - `sendMessage()` - Send to COMMS API
+  - `getMessages()` - Read with filtering
+  - `parseCommsUri()` - URI query parser
+- `src/mcp/tools.js` - Added `comms_broadcast` tool
+- `src/mcp/resources.js` - Added 2 COMMS resources
+- `tests/mcp-server.test.js` - Updated assertions (7 tools, 5 resources)
+
+**Verification:**
+- ✅ MCP server starts with 7 tools, 5 resources
+- ✅ All 39 tests passing
+- ✅ Offline-first error handling implemented
+- ✅ Environment config: COMMS_API_URL, COMMS_TIMEOUT
+
+### Phase 5 Complete ✅
+**MCP Capabilities:**
+- 7 tools: read_context, append_context, init_context, export_conversation, search_conversations, get_context_summary, **comms_broadcast**
+- 5 resources: context://current, context://sessions, context://sessions/{id}, **context://comms**, **context://comms/status**
+- 2 prompts: read_and_continue, summarize_and_save
 
 ---

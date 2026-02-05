@@ -13,6 +13,7 @@
     "menu": "node src/copilot-menu.js",
     "server": "node src/server.js",
     "mcp": "node src/mcp-server.js",
+    "bridge": "node src/bridge/copilot-responder.js",
     "test": "node --test tests/*.test.js"
   },
   "keywords": [
