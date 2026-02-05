@@ -3,7 +3,8 @@ name: Docs
 description: Maintains documentation, README, comments, and guides
 model: ['Claude Sonnet 4 (copilot)', 'Claude Sonnet 4.5 (copilot)']
 tools: ['editFiles', 'codebase', 'readFile']
-user-invokable: true
+user-invokable: false
+disable-model-invocation: false
 ---
 
 # Documentation Agent

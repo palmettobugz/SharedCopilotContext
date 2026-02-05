@@ -3,7 +3,8 @@ name: Tester
 description: Writes tests, validates implementations, ensures quality
 model: ['Claude Sonnet 4 (copilot)', 'Claude Sonnet 4.5 (copilot)']
 tools: ['runInTerminal', 'codebase', 'readFile', 'editFiles', 'testFailure']
-user-invokable: true
+user-invokable: false
+disable-model-invocation: false
 ---
 
 # Tester Agent

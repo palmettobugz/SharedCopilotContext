@@ -12,7 +12,8 @@
     "start": "node src/shared-context.js",
     "menu": "node src/copilot-menu.js",
     "server": "node src/server.js",
-    "test": "node --test tests/"
+    "mcp": "node src/mcp-server.js",
+    "test": "node --test tests/*.test.js"
   },
   "keywords": [
     "copilot",

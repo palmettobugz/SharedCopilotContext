@@ -3,7 +3,8 @@ name: Architect
 description: Designs system architecture, APIs, and makes technical decisions
 model: ['Claude Sonnet 4.5 (copilot)', 'Claude Sonnet 4 (copilot)']
 tools: ['codebase', 'readFile', 'search', 'fetch']
-user-invokable: true
+user-invokable: false
+disable-model-invocation: false
 ---
 
 # Architect Agent

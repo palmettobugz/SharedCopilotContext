@@ -3,7 +3,8 @@ name: Implementer
 description: Writes production code, fixes bugs, implements features
 model: ['Claude Sonnet 4 (copilot)', 'Claude Sonnet 4.5 (copilot)']
 tools: ['editFiles', 'runInTerminal', 'codebase', 'readFile', 'search']
-user-invokable: true
+user-invokable: false
+disable-model-invocation: false
 ---
 
 # Implementer Agent
