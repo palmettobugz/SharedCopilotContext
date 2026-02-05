@@ -100,7 +100,7 @@ Orchestrating Phase 3 implementation - MCP Server for cross-agent context sharin
 4. **Docs** - Update README with MCP usage instructions
 
 ### Status
-🔄 In Progress - Architecture design complete, awaiting user approval
+🔄 In Progress - Design approved, delegating to Implementer
 
 ### Design Highlights
 - **Resources**: context://current, context://sessions, context://sessions/{id}
@@ -112,5 +112,65 @@ Orchestrating Phase 3 implementation - MCP Server for cross-agent context sharin
 
 ### Design Document
 Full specification saved to `docs/MCP_SERVER_DESIGN.md` (41KB)
+
+### Current Step
+Delegating to @Implementer to build Phase 3.1 (Core MCP server with 2 tools + 1 resource)
+
+---
+
+## Session 2026-02-05 04:06
+
+## [2026-02-04 23:06] Orchestrator - MCP Server API Fix
+
+### Issue Resolved
+Fixed MCP SDK v1.26.0 API mismatch. Server now starts successfully.
+
+### Root Cause
+- SDK's `setRequestHandler()` expects schema objects with `method` literals
+- Was passing string method names like 'resources/list' instead of schemas
+
+### Solution
+- Imported correct schemas: `ListResourcesRequestSchema`, `ReadResourceRequestSchema`, `ListToolsRequestSchema`, `CallToolRequestSchema`
+- Updated all `setRequestHandler()` calls to use schemas instead of strings
+
+### Files Modified
+- src/mcp-server.js: Added schema imports and updated handler registrations
+
+### Verification
+✅ Server starts without errors
+✅ Logs show: 2 tools, 1 resource available
+✅ stdio transport connected
+
+### Next Steps
+- Test MCP protocol communication with actual requests
+- Delegate to Tester for validation
+- Complete Phase 3.1 implementation
+
+---
+
+## Session 2026-02-05 04:15 - Phase 3.1 Complete
+
+### Status
+✅ Core MCP Server implementation complete and functional
+
+### What Was Built
+- **MCP Server** (src/mcp-server.js): stdio transport, proper SDK v1.26.0 integration
+- **Context Manager** (src/mcp/manager.js): readContext() and appendContext() methods
+- **Tools** (src/mcp/tools.js): read_context and append_context tools
+- **Resources** (src/mcp/resources.js): context://current resource
+
+### Verification Results
+✅ Server starts without errors
+✅ Handles MCP initialize request/response
+✅ Lists tools via tools/list
+✅ Executes read_context tool successfully
+✅ Returns proper JSON-RPC formatted responses
+✅ Metadata includes path, size, lastModified, sessionCount
+
+### Next: Delegate to @Tester
+- Comprehensive validation of all tools and resources
+- Test append_context functionality
+- Test resources/read endpoint
+- Error case validation
 
 ---
