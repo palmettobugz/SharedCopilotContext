@@ -7,7 +7,7 @@ A multi-platform tool for sharing conversation history between GitHub Copilot in
 SharedCopilotContext enables seamless context sharing across AI coding sessions by:
 - Maintaining a shared `context.md` file for conversation history and project context
 - Parsing VS Code Copilot chat session files for a terminal-based history viewer
-- (Coming soon) Real-time synchronization via WebSockets
+- (In Progress) MCP Server for cross-agent context sharing
 
 ## Installation
 
@@ -103,7 +103,7 @@ SharedCopilotContext/
 ├── src/
 │   ├── shared-context.js        # Phase 1: Context file manager
 │   ├── copilot-menu.js          # Phase 2: History browser
-│   ├── server.js                # Phase 3: WebSocket server (coming)
+│   ├── mcp-server.js            # Phase 3: MCP Server (in progress)
 │   └── utils/
 │       ├── paths.js             # Cross-platform path utilities
 │       └── parser.js            # Chat session JSON parser
@@ -162,8 +162,24 @@ The `copilot-menu` tool parses these files to extract:
 
 - [x] **Phase 1**: Shared text file system (`context.md`)
 - [x] **Phase 2**: Terminal menu with ASCII art
-- [ ] **Phase 3**: WebSockets real-time sync
-- [ ] **Phase 4**: MCP server integration
+- [ ] **Phase 3**: MCP Server for cross-agent context sharing (design complete)
+- [ ] **Phase 4**: Polish, testing, Agent Skills integration
+
+> **Note**: Phase 3 was originally planned as WebSockets but pivoted to MCP after VS Code 1.109 introduced native MCP support. See [docs/MCP_SERVER_DESIGN.md](docs/MCP_SERVER_DESIGN.md) for the full specification.
+
+## Multi-Agent Workflow
+
+This project uses a coordinated multi-agent setup for development:
+
+| Agent | Role |
+|-------|------|
+| `@Orchestrator` | Coordinates work, delegates to subagents |
+| `@Architect` | Design decisions, API specs |
+| `@Implementer` | Writes code, fixes bugs |
+| `@Tester` | Validation and tests |
+| `@Docs` | Documentation maintenance |
+
+Agents are defined in `.github/agents/` and use Claude models exclusively.
 
 ## Contributing
 

@@ -24,7 +24,7 @@ Read this file for prior conversation context. At the end of your session, appen
 |-------|-------------|--------|
 | 1 | Shared text file system (`context.md`) | ✅ Complete |
 | 2 | Terminal menu with ASCII art | ✅ Complete |
-| 3 | MCP Server (pivoted from WebSockets) | 🔄 Not Started |
+| 3 | MCP Server (pivoted from WebSockets) | 🔄 In Progress - Design Complete |
 | 4 | Polish, testing, Agent Skills | ⏳ Pending |
 
 ### Multi-Agent Setup
@@ -85,5 +85,32 @@ All agents use Claude models only (per user request):
 1. Test the multi-agent workflow with a real task
 2. Begin Phase 3: MCP Server implementation
 3. Consider using Background agents for parallel work
+
+---
+
+## Session 2026-02-04 21:00 - Phase 3: MCP Server Orchestration
+
+### Action
+Orchestrating Phase 3 implementation - MCP Server for cross-agent context sharing.
+
+### Plan
+1. **Architect** - Design MCP server API (tools, resources, endpoints)
+2. **Implementer** - Build `src/mcp-server.js` based on design
+3. **Tester** - Validate implementation works
+4. **Docs** - Update README with MCP usage instructions
+
+### Status
+🔄 In Progress - Architecture design complete, awaiting user approval
+
+### Design Highlights
+- **Resources**: context://current, context://sessions, context://sessions/{id}
+- **Tools**: read_context, append_context, init_context, export_conversation, search_conversations, get_context_summary
+- **Prompts**: read_and_continue, summarize_and_save
+- **Transport**: stdio (simpler than HTTP/SSE)
+- **Dependencies**: @modelcontextprotocol/sdk
+- **Integration**: VS Code (.vscode/settings.json), Copilot CLI (~/.copilot/mcp.json)
+
+### Design Document
+Full specification saved to `docs/MCP_SERVER_DESIGN.md` (41KB)
 
 ---
