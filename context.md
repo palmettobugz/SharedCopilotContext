@@ -17,15 +17,15 @@ Read this file for prior conversation context. At the end of your session, appen
 
 ### Tech Stack
 - **Runtime**: Node.js 18+ (ES Modules)
-- **Dependencies**: chalk, chokidar, express, glob, socket.io
+- **Dependencies**: chalk, chokidar, express, glob, socket.io, @modelcontextprotocol/sdk
 
 ### Project Phases
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Shared text file system (`context.md`) | ✅ Complete |
 | 2 | Terminal menu with ASCII art | ✅ Complete |
-| 3 | MCP Server (pivoted from WebSockets) | 🔄 In Progress - Design Complete |
-| 4 | Polish, testing, Agent Skills | ⏳ Pending |
+| 3 | MCP Server (6 tools, 3 resources, 2 prompts) | ✅ Complete |
+| 4 | Polish, testing, Agent Skills | 🔄 In Progress |
 
 ### Multi-Agent Setup
 - **Agents**: Orchestrator, Architect, Implementer, Tester, Docs

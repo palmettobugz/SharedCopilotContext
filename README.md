@@ -162,7 +162,7 @@ The `copilot-menu` tool parses these files to extract:
 
 - [x] **Phase 1**: Shared text file system (`context.md`)
 - [x] **Phase 2**: Terminal menu with ASCII art
-- [ ] **Phase 3**: MCP Server for cross-agent context sharing (design complete)
+- [x] **Phase 3**: MCP Server for cross-agent context sharing
 - [ ] **Phase 4**: Polish, testing, Agent Skills integration
 
 > **Note**: Phase 3 was originally planned as WebSockets but pivoted to MCP after VS Code 1.109 introduced native MCP support. See [docs/MCP_SERVER_DESIGN.md](docs/MCP_SERVER_DESIGN.md) for the full specification.
