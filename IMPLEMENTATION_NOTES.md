@@ -382,3 +382,167 @@ VS Code 1.109 introduces powerful native features for context sharing and agent 
 ---
 
 *Analysis by GitHub Copilot (Claude Opus 4.5) - February 4, 2026*
+
+---
+
+## Phase 5: COMMS Integration ⏳
+
+**Goal:** Bridge SharedCopilotContext MCP server with AI Lab Constellation COMMS chat system.
+
+### Overview
+
+COMMS is the chat hub for the Star Force constellation agents (Artoo/Astra on sf1/sf3). Integration enables:
+- VS Code Copilot reading COMMS chat history
+- MCP tools posting to COMMS broadcasts
+- Unified context across human Copilot sessions and agent conversations
+
+### COMMS API Reference
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `http://sf1:5052/api/messages` | GET | Retrieve chat history |
+| `http://sf1:5052/api/send` | POST | Post message to chat |
+| `http://sf1:5052/api/online` | GET | List online agents |
+
+See `ai-lab-constellation/docs/COMMS_CHEAT_SHEET.md` for full API details.
+
+### Integration Points
+
+**5.1 MCP Resource: `context://comms`**
+```javascript
+// src/mcp/comms.js
+{
+  uri: 'context://comms/recent',
+  name: 'Recent COMMS Messages',
+  mimeType: 'application/json',
+  description: 'Last N messages from COMMS chat'
+}
+```
+
+**5.2 MCP Tool: `comms_broadcast`**
+```javascript
+{
+  name: 'comms_broadcast',
+  description: 'Post a message to COMMS chat',
+  inputSchema: {
+    properties: {
+      content: { type: 'string', description: 'Message content' },
+      sender_name: { type: 'string', default: 'Copilot' }
+    },
+    required: ['content']
+  }
+}
+```
+
+**5.3 Context Sync**
+Auto-append COMMS workflow completions to context.md:
+- 7-step site creation workflows
+- Agent task completions
+- Important broadcasts
+
+### Success Criteria
+- [ ] VS Code Copilot can read COMMS history via MCP
+- [ ] Can post to COMMS from VS Code Copilot
+- [ ] COMMS workflow summaries appear in context.md
+
+---
+
+## Phase 6: Star Force Deployment ⏳
+
+**Goal:** Deploy SharedCopilotContext to sf1/sf2/sf3 for fleet-wide context sharing.
+
+### Target Configuration
+
+| Machine | Role | Copilot CLI | MCP Server | Context Sync |
+|---------|------|-------------|------------|--------------|
+| MacBook | Dev Hub | ✅ | ✅ Local | Git push |
+| sf1 (Bridge) | COMMS Hub | ✅ | ✅ + COMMS | Authoritative |
+| sf2 (Bridge) | Desktop | ✅ | ✅ Local | Git sync |
+| sf3 (Engineering) | Agent Host | ✅ | ✅ Local | Git sync |
+
+### Deployment Steps
+
+**6.1 Clone Repository**
+```bash
+# On each star-force machine via SSH
+ssh sf1 "cd ~ && git clone https://github.com/palmettobugz/SharedCopilotContext.git"
+ssh sf3 "cd ~ && git clone https://github.com/palmettobugz/SharedCopilotContext.git"
+```
+
+**6.2 Install Dependencies**
+```bash
+ssh sf1 "cd ~/SharedCopilotContext && npm install"
+ssh sf3 "cd ~/SharedCopilotContext && npm install"
+```
+
+**6.3 Initialize Context**
+```bash
+ssh sf1 "cd ~/SharedCopilotContext && node src/shared-context.js init"
+ssh sf3 "cd ~/SharedCopilotContext && node src/shared-context.js init"
+```
+
+**6.4 Configure Copilot CLI MCP**
+Create `~/.copilot/mcp.json` on each machine:
+```json
+{
+  "servers": {
+    "shared-context": {
+      "command": "node",
+      "args": ["/home/starfool/SharedCopilotContext/src/mcp-server.js"],
+      "env": {
+        "WORKSPACE": "/home/starfool/SharedCopilotContext"
+      }
+    }
+  }
+}
+```
+
+**6.5 Context Sync Cron (Optional)**
+```bash
+# Cron job to sync context.md via git
+*/15 * * * * cd ~/SharedCopilotContext && git pull && git add context.md && git commit -m "sync: $(hostname) $(date +%H:%M)" && git push
+```
+
+### Federation Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 SharedCopilotContext Federation                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  MacBook (Dev)     sf1 (Bridge)        sf3 (Engineering)        │
+│  ┌────────────┐    ┌─────────────┐     ┌─────────────┐          │
+│  │ VS Code    │    │ COMMS Hub   │     │ Artoo-sf3   │          │
+│  │ MCP Server │    │ MCP Server  │     │ Astra-sf3   │          │
+│  │ context.md │    │ context.md  │     │ MCP Server  │          │
+│  └─────┬──────┘    │ + COMMS API │     │ context.md  │          │
+│        │           └──────┬──────┘     └──────┬──────┘          │
+│        │                  │                   │                  │
+│        └────────┬─────────┴─────────┬─────────┘                  │
+│                 │                   │                            │
+│                 ▼                   ▼                            │
+│        ┌────────────────────────────────────┐                   │
+│        │     GitHub Repository (sync)       │                   │
+│        │  palmettobugz/SharedCopilotContext │                   │
+│        └────────────────────────────────────┘                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Success Criteria
+- [ ] SharedCopilotContext running on sf1 and sf3
+- [ ] Copilot CLI on star-force machines can use MCP tools
+- [ ] Context.md syncs across machines via git
+- [ ] COMMS integration functional on sf1
+
+---
+
+## Updated Phase Summary
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Shared text file system (`context.md`) | ✅ Complete |
+| 2 | Terminal menu with ASCII art | ✅ Complete |
+| 3 | MCP Server (6 tools, 3 resources, 2 prompts) | ✅ Complete |
+| 4 | Polish, testing, Agent Skills | 🔄 In Progress |
+| 5 | COMMS Integration (MCP ↔ COMMS bridge) | ⏳ Planned |
+| 6 | Star Force Deployment (sf1/sf2/sf3) | ⏳ Planned |
